@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/intro_fragment"
+    android:background="@color/white"
+    tools:context=".IntroduceActivity"
+    android:layout_marginRight="@dimen/margin_16dp"
+    android:layout_marginLeft="@dimen/margin_16dp"
+    >
+
+    <ImageView
+        android:layout_width="@dimen/layout_logo_intro"
+        android:layout_height="@dimen/layoutheight_logo_intro"
+        android:src="@drawable/ic_diamond"
+        android:layout_gravity="top|center"
+        android:layout_marginTop="@dimen/layout_marginTop_logo_intro"
+        />
+
+    <TextView
+        style="@style/TextAppearance.Dnail.Headline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/text_sologan_intro"
+        android:textColor="@color/pink_slogan"
+        android:textSize="24sp"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_bat_dau_trai_nghiem"
+        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/layout_marginTop_bat_dau_trai_nghiem"
+        android:textSize="20sp"
+        android:layout_marginBottom="@dimen/margin_8dp"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Dnail.TextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/text_nhap_sdt"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_introFragment_phoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:inputType="number"
+            android:drawableLeft="@drawable/ic_phone_android_black_24dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_1introduceActivity_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_tiep"
+        android:layout_gravity="bottom|center"
+        android:padding="@dimen/padding_button"
+        android:layout_marginTop="@dimen/marginTop_btn_tiep_theo"
+        android:textColor="@color/white"
+        />
+</LinearLayout>

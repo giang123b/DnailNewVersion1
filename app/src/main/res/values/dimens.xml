@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="layout_logo_intro">200dp</dimen>
+    <dimen name="textsize_sologan">20sp</dimen>
+    <dimen name="layoutheight_logo_intro">300dp</dimen>
+    <dimen name="layout_marginTop_logo_intro">20dp</dimen>
+    <dimen name="textsize_bat_dau_trai_nghiem">20sp</dimen>
+    <dimen name="layout_marginTop_bat_dau_trai_nghiem">60dp</dimen>
+    <dimen name="textsize_nhapotp">30sp</dimen>
+    <dimen name="textsize_ma_otp_gui_toi_So">20sp</dimen>
+    <dimen name="textsize_sdt">20sp</dimen>
+    <dimen name="textsize_hoan_thien_dang_ky">30sp</dimen>
+    <dimen name="padding_hoan_thien_dang_ky">20dp</dimen>
+    <dimen name="textsize_day_la_buoc_cuoi">20sp</dimen>
+    <dimen name="padding_button">5dp</dimen>
+    <dimen name="marginTop_btn_tiep_theo">50dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="padding_4dp">4dp</dimen>
+    <dimen name="padding_8dp">8dp</dimen>
+    <dimen name="padding_16dp">16dp</dimen>
+    <dimen name="margin_4dp">4dp</dimen>
+    <dimen name="margin_8dp">8dp</dimen>
+    <dimen name="margin_16dp">16dp</dimen>
+
+    <dimen name="margin_bottom">8dp</dimen>
+
+
+    <dimen name="card_margin">5dp</dimen>
+    <dimen name="card_model_radius">0dp</dimen>
+    <dimen name="album_cover_height">160dp</dimen>
+    <dimen name="album_title_padding">10dp</dimen>
+    <dimen name="textsize_Mau">15dp</dimen>
+    <dimen name="songs_count_padding_bottom">5dp</dimen>
+    <dimen name="songs_count">12dp</dimen>
+    <dimen name="ic_album_overflow_width">20dp</dimen>
+    <dimen name="ic_album_overflow_height">30dp</dimen>
+    <dimen name="ic_album_overflow_margin_top">10dp</dimen>
+    <dimen name="marginLeft_button_su_dung">90dp</dimen>
+    <dimen name="layoutHeight_ghi_chu">100dp</dimen>
+</resources>

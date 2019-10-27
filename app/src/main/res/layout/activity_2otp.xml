@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/OTP_fragment"
+    android:background="@color/white"
+    >
+
+    <ImageView
+        android:id="@+id/image_otpActivity_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_back_black_24dp"
+        android:layout_margin="@dimen/margin_8dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginRight="@dimen/margin_16dp"
+        android:layout_marginLeft="@dimen/margin_16dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_nhap_ma_otp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="@dimen/textsize_nhapotp"
+            android:layout_marginTop="@dimen/layout_marginTop_logo_intro"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_ma_otp_gui_toi_So"
+            android:gravity="center"
+            android:textSize="@dimen/textsize_ma_otp_gui_toi_So"
+            />
+        <TextView
+            android:id="@+id/text_otpFragment_phoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+84356865077"
+            android:gravity="center"
+            android:textSize="@dimen/textsize_sdt"
+            />
+
+        <com.alimuzaffar.lib.pin.PinEntryEditText
+            android:id="@+id/txt_pin_entry"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:cursorVisible="false"
+            android:digits="1234567890"
+            android:inputType="number"
+            android:maxLength="4"
+            android:textIsSelectable="false"
+            android:textSize="20sp"
+            app:pinAnimationType="popIn"
+            android:layout_gravity="center"
+            android:imeOptions="actionDone"
+            />
+
+        <TextView
+            android:id="@+id/textView_otpActivity_secondCountdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Dnail.Headline5"
+            android:text="30"
+            android:gravity="center"
+            />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_otpActivity_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_tiep"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_16dp"
+            android:padding="@dimen/padding_button"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+</FrameLayout>

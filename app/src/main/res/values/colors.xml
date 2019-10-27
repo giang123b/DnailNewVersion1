@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#fd718b</color>
+    <color name="colorPrimaryDark">#D9FD718B</color>
+    <color name="colorAccent">#fd718b</color>
+    <color name="black">#000000</color>
+    <color name="pink_slogan">#fd718b</color>
+    <color name="pink_theme">#fd718b</color>
+    <color name="sliver">#A0A0A0</color>
+    <color name="white">#ffff</color>
+    <color name="not_white">#DAD7D7</color>
+    <color name="textColorPrimary">#442C2E</color>
+    <color name="toolbarIconColor">@color/textColorPrimary</color>
+    <color name="loginPageBackgroundColor">#FFFFFF</color>
+    <color name="productGridBackgroundColor">#FFFBFA</color>
+    <color name="textInputOutlineColor">#fd718b</color>
+
+    <color name="not_pink">#fce4ec</color>
+</resources>
