@@ -30,10 +30,10 @@ class OtpActivity : AppCompatActivity() {
             }
         })
 
-        var intent = intent
-        var phoneNumber = intent.getStringExtra("phoneNumberFromIntroduceActivity")
-        phoneNumber = phoneNumber.substring(1)
-        text_otpFragment_phoneNumber.setText("+84" + phoneNumber)
+//        var intent = intent
+//        var phoneNumber = intent.getStringExtra("phoneNumberFromIntroduceActivity")
+//        phoneNumber = phoneNumber.substring(1)
+//        text_otpFragment_phoneNumber.setText("+84" + phoneNumber)
     }
 
     private fun timeCountDown() {

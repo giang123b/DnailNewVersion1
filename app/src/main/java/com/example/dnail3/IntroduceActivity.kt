@@ -22,14 +22,14 @@ class IntroduceActivity : AppCompatActivity() {
                 if (!isPhoneValid(editText_introFragment_phoneNumber.text)) {
                     editText_introFragment_phoneNumber.error =
                         getString(R.string.text_sdt_khong_dung)
-                    //oast.makeText(getActivity(), getString(R.string.text_sdt_khong_dung), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     val intent = Intent(this@IntroduceActivity, OtpActivity::class.java)
-//                    val intent1 = Intent(this@IntroduceActivity, EditProfileActivity::class.java)
-                    intent.putExtra("phoneNumberFromIntroduceActivity", editText_introFragment_phoneNumber.text.toString())
-//                    intent1.putExtra("phoneNumberFromIntroduceActivity", editText_introFragment_phoneNumber.text.toString())
-//                    startActivity(intent1)
+                    var phone : String = editText_introFragment_phoneNumber.text.toString()
+                    if (phone == null){
+                        phone = "123"
+                    }
+//                    intent.putExtra("phoneNumberFromIntroduceActivity", phone )
                     startActivity(intent)
                 }
             }
@@ -37,6 +37,6 @@ class IntroduceActivity : AppCompatActivity() {
     }
 
     private fun isPhoneValid(text: Editable?): Boolean {
-        return text != null && text.length >= 1
+        return text != null && text.length >= 0
     }
 }

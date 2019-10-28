@@ -39,6 +39,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationListener
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -56,26 +57,23 @@ import java.util.*
 
 
 class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
-    GoogleMap.OnMarkerClickListener {
+    GoogleApiClient.ConnectionCallbacks,
+    GoogleApiClient.OnConnectionFailedListener,
+    LocationListener {
 
-    private lateinit var map: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var lastLocation: Location
-
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var locationRequest: LocationRequest
-    private var locationUpdateState = false
-
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-        private const val REQUEST_CHECK_SETTINGS = 2
-        private const val PLACE_PICKER_REQUEST = 3
-    }
+    val MY_PERMISSIONS_REQUEST_LOCATION = 99
+    internal var mGoogleApiClient: GoogleApiClient? = null
+    internal lateinit var mLastLocation: Location
+    internal var mCurrLocationMarker: Marker? = null
+    internal lateinit var mLocationRequest: LocationRequest
+    private var mMap: GoogleMap? = null
 
     private lateinit var searchView: SearchView
     private lateinit var text_linearTimeLocation_enterLocation: TextView
     private lateinit var text_linearTimeLocation_enterTime: TextView
     private lateinit var button_linearChooseTime_ok: MaterialButton
+    private var completeEnterLocation: Boolean = false
+    private var completeEnterTime: Boolean = false
 
     private lateinit var text_chooseTime_day1: TextView
     private lateinit var text_chooseTime_day2: TextView
@@ -139,9 +137,8 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
         return root
     }
 
-
-    // Events
     private fun addEvents(root: View) {
+        //Controls
         text_linearTimeLocation_enterLocation = root.findViewById(R.id.text_linearTimeLocation_enterLocation)
         text_linearTimeLocation_enterTime = root.findViewById(R.id.text_linearTimeLocation_enterTime)
         button_linearChooseTime_ok = root.findViewById(R.id.button_linearChooseTime_ok)
@@ -149,6 +146,7 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
         imageView_three_dots = root.findViewById(R.id.imageView_three_dots)
         imageView_linearBookSuccessful_threeDots = root.findViewById(R.id.imageView_linearBookSuccessful_threeDots)
 
+        // Events
         text_linearTimeLocation_enterLocation.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 linear_chooseTime.setVisibility(GONE)
@@ -163,14 +161,19 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
                     override fun onClick(v: View?) {
                         text_linearTimeLocation_enterLocation.setText(searchView.query)
                         linear_time_locaion.setVisibility(View.VISIBLE)
-                        searchView.visibility = View.GONE
-                        button_linearTimeLocation_searchWorker.setVisibility(View.VISIBLE)
-                        button_linearSearchLocation_ok.setVisibility(View.GONE)
+                        searchView.visibility = GONE
+                        button_linearSearchLocation_ok.setVisibility(GONE)
+                        completeEnterLocation == true
+
+                        if (completeEnterLocation == true && completeEnterTime == true){
+                            button_linearTimeLocation_searchWorker.setVisibility(View.VISIBLE)
+                        }
                     }
                 })
             }
 
         })
+
 
         text_linearTimeLocation_enterTime.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
@@ -184,21 +187,26 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
 
                 button_linearSearchLocation_ok.setVisibility(GONE)
 
+                // set day when user do not clock
                 val calendar = Calendar.getInstance()
-
                 val simpleDateFormatDay = SimpleDateFormat("dd/MM")
-
                 text_linearTimeLocation_enterTime.setText(simpleDateFormatDay.format(calendar.time))
+
+                button_linearChooseTime_ok.setOnClickListener(object : View.OnClickListener {
+                    override fun onClick(v: View?) {
+                        linear_chooseTime.setVisibility(GONE)
+                        button_linearTimeLocation_searchWorker.setVisibility(View.VISIBLE)
+                        button_linearChooseTime_ok.setVisibility(GONE)
+                        completeEnterTime == true
+
+                        if (completeEnterLocation == true && completeEnterTime == true){
+                            button_linearTimeLocation_searchWorker.setVisibility(View.VISIBLE)
+                        }
+                    }
+                })
             }
         })
 
-        button_linearChooseTime_ok.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                linear_chooseTime.setVisibility(GONE)
-                button_linearTimeLocation_searchWorker.setVisibility(View.VISIBLE)
-                button_linearChooseTime_ok.setVisibility(GONE)
-            }
-        })
 
         //set linear choose time
         setLinearChooseTime(root)
@@ -362,7 +370,7 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
     // bottom bar
     private fun setBottomBar(view: View) {
 
-// control
+        // control
         linear_price = view.findViewById(R.id.linear_price)
         imageView_esc_in_way_to_pay = view.findViewById(R.id.imageView_esc_in_way_to_pay)
         text_promotion = view.findViewById(R.id.text_promotion)
@@ -371,7 +379,7 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
         imageView_esc_in_note = view.findViewById(R.id.imageView_esc_in_note)
         button_linearModel_bookWorker = view.findViewById(R.id.button_linearModel_bookWorker)
 
-// event
+        // event
         linear_price.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 linear_way_to_pay.setVisibility(View.VISIBLE)
@@ -458,8 +466,8 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
 
                     val address = addressList!![0]
                     val latLng = LatLng(address.latitude, address.longitude)
-                    map.addMarker(MarkerOptions().position(latLng).title(location))
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    mMap!!.addMarker(MarkerOptions().position(latLng).title(location))
+                    mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
                 }
 
                 return false
@@ -475,179 +483,150 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
         val mapFragment = this.childFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(p0: LocationResult) {
-                super.onLocationResult(p0)
-
-                lastLocation = p0.lastLocation
-                placeMarkerOnMap(LatLng(lastLocation.latitude, lastLocation.longitude))
-            }
-        }
-
-        createLocationRequest()
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CHECK_SETTINGS) {
-            if (resultCode == Activity.RESULT_OK) {
-                locationUpdateState = true
-                startLocationUpdates()
-            }
-        }
-        if (requestCode == PLACE_PICKER_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                val place = PlacePicker.getPlace(context, data)
-                var addressText = place.name.toString()
-                addressText += "\n" + place.address.toString()
-
-//                placeMarkerOnMap(place.latLng)
-            }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (!locationUpdateState) {
-            startLocationUpdates()
-        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-
-        map.uiSettings.isZoomControlsEnabled = true
-        map.setOnMarkerClickListener(this)
-
-        setUpMap()
+        mMap = googleMap
+        mMap!!.mapType = GoogleMap.MAP_TYPE_NORMAL
+        mMap!!.uiSettings.isZoomControlsEnabled = true
+        mMap!!.uiSettings.isZoomGesturesEnabled = true
+        mMap!!.uiSettings.isCompassEnabled = true
+        //Initialize Google Play Services
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(
+                    context!!,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                buildGoogleApiClient()
+                mMap!!.isMyLocationEnabled = true
+            }
+        } else {
+            buildGoogleApiClient()
+            mMap!!.isMyLocationEnabled = true
+        }
     }
 
-    override fun onMarkerClick(p0: Marker?) = false
+    @Synchronized
+    protected fun buildGoogleApiClient() {
+        mGoogleApiClient = GoogleApiClient.Builder(context!!)
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this)
+            .addApi(LocationServices.API)
+            .build()
+        mGoogleApiClient!!.connect()
+    }
 
-    private fun setUpMap() {
+    override fun onConnected(bundle: Bundle?) {
+        mLocationRequest = LocationRequest()
+        mLocationRequest.interval = 1000
+        mLocationRequest.fastestInterval = 1000
+        mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        if (ContextCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient,
+                mLocationRequest, this
+            )
+        }
+    }
+
+
+    override fun onConnectionSuspended(i:Int) {}
+
+    override fun onLocationChanged(location:Location) {
+        mLastLocation = location
+        if (mCurrLocationMarker != null)
+        {
+            mCurrLocationMarker!!.remove()
+        }
+
+        //Showing Current Location Marker on Map
+        val latLng = LatLng(location.latitude, location.longitude)
+        val markerOptions = MarkerOptions()
+        markerOptions.position(latLng)
+        val locationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val provider = locationManager!!.getBestProvider(Criteria(), true)
         if (ActivityCompat.checkSelfPermission(
-                this!!.context!!,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this!!.activity!!,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+                context!!, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context!!, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ){
             return
         }
 
-        map.isMyLocationEnabled = true
-        map.mapType = GoogleMap.MAP_TYPE_NORMAL
-
-        fusedLocationClient.lastLocation.addOnSuccessListener(this!!.activity!!){
-                location ->
-            // Got last known location. In some rare situations this can be null.
-            if (location != null) {
-                lastLocation = location
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                placeMarkerOnMap(currentLatLng)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-            }
-        }
-
-    }
-
-    private fun placeMarkerOnMap(location: LatLng) {
-        val markerOptions = MarkerOptions().position(location)
-
-        val titleStr = getAddress(location)  // add these two lines
-        markerOptions.title(titleStr)
-
-        map.addMarker(markerOptions)
-    }
-
-    private fun getAddress(latLng: LatLng): String {
-        // 1
-        val geocoder = Geocoder(context)
-        val addresses: List<Address>?
-        val address: Address?
-        var addressText = ""
-
-        try {
-            // 2
-            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            // 3
-            if (null != addresses && !addresses.isEmpty()) {
-                address = addresses[0]
-                for (i in 0 until address.maxAddressLineIndex) {
-                    addressText += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(i)
+        val locations = locationManager!!.getLastKnownLocation(provider!!)
+        val providerList = locationManager!!.allProviders
+        if (null != locations && null != providerList && providerList.size > 0)
+        {
+            val longitude = locations!!.longitude
+            val latitude = locations!!.latitude
+            val geocoder = Geocoder(
+                context,
+                Locale.getDefault())
+            try
+            {
+                val listAddresses = geocoder.getFromLocation(latitude,
+                    longitude, 1)
+                if (null != listAddresses && listAddresses!!.size > 0)
+                {
+                    val state = listAddresses!![0].adminArea
+                    val country = listAddresses!![0].countryName
+                    val subLocality = listAddresses!![0].subLocality
+                    markerOptions.title(
+                        "" + latLng + "," + subLocality + "," + state
+                                + "," + country
+                    )
                 }
             }
-        } catch (e: IOException) {
-            Log.e("MapsActivity", e.localizedMessage)
-        }
+            catch (e: IOException) {
+                e.printStackTrace()
+            }
 
-        return addressText
+        }
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        mCurrLocationMarker = mMap!!.addMarker(markerOptions)
+        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        mMap!!.animateCamera(CameraUpdateFactory.zoomTo(15f))
+        if (mGoogleApiClient != null)
+        {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
+                this)
+        }
     }
 
-    private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                this!!.context!!,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this!!.activity!!,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE)
-            return
-        }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */)
-    }
 
-    private fun createLocationRequest() {
-        locationRequest = LocationRequest()
-        locationRequest.interval = 10000
-        locationRequest.fastestInterval = 5000
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {}
 
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
-        val client = LocationServices.getSettingsClient(this!!.activity!!)
-        val task = client.checkLocationSettings(builder.build())
-
-        task.addOnSuccessListener {
-            locationUpdateState = true
-            startLocationUpdates()
-        }
-        task.addOnFailureListener { e ->
-            if (e is ResolvableApiException) {
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    e.startResolutionForResult(activity,
-                        REQUEST_CHECK_SETTINGS)
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_LOCATION -> {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(
+                            context!!,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient()
+                        }
+                        mMap!!.isMyLocationEnabled = true
+                    }
+                } else {
+                    Toast.makeText(
+                        context, "permission denied",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
+                return
             }
         }
     }
-
-    private fun loadPlacePicker() {
-        val builder = PlacePicker.IntentBuilder()
-
-        try {
-            startActivityForResult(builder.build(activity), PLACE_PICKER_REQUEST)
-        } catch (e: GooglePlayServicesRepairableException) {
-            e.printStackTrace()
-        } catch (e: GooglePlayServicesNotAvailableException) {
-            e.printStackTrace()
-        }
-    }
-
 
     private fun timeCountDown() {
         val w = object : CountDownTimer(1000, 1000) {
@@ -750,7 +729,7 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
 
         val mLayoutManager = GridLayoutManager(context, 3)
         recyclerView_timeNight.setLayoutManager(mLayoutManager)
-        recyclerView_timeNight.addItemDecoration(GridSpacingItemDecoration(3, dpToPx(10), true))
+        recyclerView_timeNight.addItemDecoration(GridSpacingItemDecoration(3, dpToPx(5), true))
         recyclerView_timeNight.setItemAnimator(DefaultItemAnimator())
         recyclerView_timeNight.setAdapter(adapterNight)
 
@@ -769,7 +748,7 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
 
         val mLayoutManager = GridLayoutManager(context, 3)
         recyclerView_timeAfternoon.setLayoutManager(mLayoutManager)
-        recyclerView_timeAfternoon.addItemDecoration(GridSpacingItemDecoration(3, dpToPx(10), true))
+        recyclerView_timeAfternoon.addItemDecoration(GridSpacingItemDecoration(3, dpToPx(5), true))
         recyclerView_timeAfternoon.setItemAnimator(DefaultItemAnimator())
         recyclerView_timeAfternoon.setAdapter(adapterAfternoon)
 
@@ -790,7 +769,7 @@ class SearchWorkerFragment : Fragment(), OnMapReadyCallback,
 
         val mLayoutManager = GridLayoutManager(context, 3)
         recyclerView_timeMorning.setLayoutManager(mLayoutManager)
-        recyclerView_timeMorning.addItemDecoration(GridSpacingItemDecoration(3, dpToPx(10), true))
+        recyclerView_timeMorning.addItemDecoration(GridSpacingItemDecoration(3, dpToPx(5), true))
         recyclerView_timeMorning.setItemAnimator(DefaultItemAnimator())
         recyclerView_timeMorning.setAdapter(adapterMorning)
 

@@ -95,6 +95,9 @@
     <string name="text_dung_ngay">Dùng ngay</string>
     <string name="text_luu_y">Lưu ý: ...</string>
     <string name="text_so_dien_thoai">Số điện thoại</string>
+    <string name="text_khong_tim_duoc_dia_chi_tren">Không tìm được địa chỉ trên!</string>
+    <string name="text_lich_su_giao_dich">Lịch sử giao dịch</string>
+    <string name="text_chi_tiet_khuyen_mai">Chi tiết khuyến mại</string>
 
     <dimen name="shr_product_grid_spacing">16dp</dimen>
     <dimen name="shr_product_grid_spacing_small">4dp</dimen>

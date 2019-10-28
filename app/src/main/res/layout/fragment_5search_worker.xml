@@ -86,6 +86,7 @@
                 android:drawableRight="@drawable/ic_arrow_forward_black_24dp"
                 android:gravity="center"
                 android:padding="@dimen/padding_button"
+                android:visibility="gone"
                 />
         </LinearLayout>
 
@@ -228,20 +229,17 @@
                     android:id="@+id/recyclerView_timeMorning"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
                     />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_timeAfternoon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
                     android:visibility="gone"
                     />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_timeNight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
                     android:visibility="gone"
                     />
             </LinearLayout>

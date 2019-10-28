@@ -18,22 +18,22 @@ class RegisterActivity : AppCompatActivity() {
     private fun addEvents() {
         button_registerActivity_next.setOnClickListener(object: View.OnClickListener {
             override fun onClick(v: View?) {
-                var checkAllEditIsVailed = true
-                if (!isEditTextValid(editText_register_name.text)){
-                    editText_register_name.error = "Họ tên chưa đúng"
-                    checkAllEditIsVailed = false
-                }
-                if (!isEditTextValid(editText_register_email.text)){
-                    editText_register_email.error = "Email chưa đúng"
-                    checkAllEditIsVailed = false
-                }
-
-                if (checkAllEditIsVailed == true){
+//                var checkAllEditIsVailed = true
+//                if (!isEditTextValid(editText_register_name.text)){
+//                    editText_register_name.error = "Họ tên chưa đúng"
+//                    checkAllEditIsVailed = false
+//                }
+//                if (!isEditTextValid(editText_register_email.text)){
+//                    editText_register_email.error = "Email chưa đúng"
+//                    checkAllEditIsVailed = false
+//                }
+//
+//                if (checkAllEditIsVailed == true){
                     val intent = Intent(this@RegisterActivity, PhoneScreenActivity::class.java)
-                    intent.putExtra("nameFormRegisterActivity", editText_register_name.text)
-                    intent.putExtra("emailFormRegisterActivity", editText_register_email.text)
+//                    intent.putExtra("nameFormRegisterActivity", editText_register_name.text)
+//                    intent.putExtra("emailFormRegisterActivity", editText_register_email.text)
                     startActivity(intent)
-                }
+//                }
             }
         })
 

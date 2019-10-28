@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_thong_tin_ca_nhan"
+                    android:text="@string/text_lich_su_giao_dich"
                     android:textSize="30sp"
                     android:gravity="center"
                     />

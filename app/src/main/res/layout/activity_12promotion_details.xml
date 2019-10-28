@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_khuyen_mai"
+                    android:text="@string/text_chi_tiet_khuyen_mai"
                     android:textSize="30sp"
                     android:gravity="center"
                     />
@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="#dnailKM01 - Ưu đãi 50%..."
-                    android:textSize="30dp"
+                    android:textSize="25dp"
                     android:textColor="@color/black"
                     android:gravity="center"
                     />
